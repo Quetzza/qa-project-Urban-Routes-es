@@ -2,8 +2,8 @@ from selenium import webdriver
 from src.data import  Data
 from src.config import Configuraton
 from src.model.FromToPageUrbanRoutes import FromToPageUrbanRoutes
-from src.model.CallTaxiComfortPage import CallTaxiComfortPage
-
+from src.model.CallTaxiPage import CallTaxiPage
+from src.model.ModeComfortPage import ModeComfortPage
 class TestUrbanRoutes:
 
     driver = None
@@ -17,6 +17,7 @@ class TestUrbanRoutes:
         cls.driver = webdriver.Chrome()
         cls.driver.get(Configuraton.URBAN_ROUTER_URL)
 
+
     # Configurar la dirección
     def test_set_route(self):
         routes_page = FromToPageUrbanRoutes(self.driver)
@@ -27,13 +28,17 @@ class TestUrbanRoutes:
         assert routes_page.get_from() == address_from
         assert routes_page.get_to() == address_to
 
+    # Call taxi
+    def test_call_taxi(self):
+        taxi_page = CallTaxiPage(self.driver)
+        taxi_page.call_taxi()
+
     #Seleccionar la tarifa Comfort.
-    def test_on_clic_call_taxi(self):
-        call_taxi = CallTaxiComfortPage(self.driver)
-        # assert call_taxi.get_default_mode_route() == 'Flash'# check the default selected mode route 'Flash'
-        # assert 'car' in call_taxi.get_default_service_fee()# check the default selected service fee 'taxi'
-        call_taxi.on_click_call_taxi_button()
+    def test_on_clic_call_taxi_comfort(self):
+        comfort = ModeComfortPage(self.driver)
+        comfort.set_mode_comfort()
 
     @classmethod
     def teardown_class(cls):
+        # cls.driver.delete_all_cookies()
         cls.driver.quit()
