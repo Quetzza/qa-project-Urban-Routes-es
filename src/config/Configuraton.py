@@ -1,2 +1,5 @@
-URBAN_ROUTER_URL = 'https://cnt-7257419a-e051-44ba-8401-b519dda63d75.containerhub.tripleten-services.com?lng=es'
+URBAN_ROUTER_URL = 'https://cnt-371f430f-9aa0-4912-96f2-47f3813f22ed.containerhub.tripleten-services.com'
+
+lOG_CODE_PHONE = 'api/v1/number'
+
 
