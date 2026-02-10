@@ -1,12 +1,10 @@
-import time
-
-import requests
 from selenium import webdriver
 from src.data import  Data
 from src.config import Configuraton
 from src.model.UrbanRoutesPage import UrbanRoutesPage
 from src.utils.Retrive import retrieve_phone_code
-
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 class TestUrbanRoutes:
 
     driver = None
@@ -17,7 +15,9 @@ class TestUrbanRoutes:
         # from selenium.webdriver import DesiredCapabilities
         # capabilities = DesiredCapabilities. CHROME
         # capabilities["goog:loggingPrefs"] = {'performance': 'ALL'}
-        cls.driver = webdriver.Chrome()
+        options = Options()
+        options.set_capability("goog:loggingPrefs",{"performance":"ALL"})
+        cls.driver = webdriver.Chrome(service=Service(),options=options)
         cls.driver.get(Configuraton.URBAN_ROUTER_URL)
 
 
@@ -42,19 +42,17 @@ class TestUrbanRoutes:
     # # Select the Comfort rate.
     def test_set_mode_comfort(self):
         mode_comfort = UrbanRoutesPage(self.driver)
-        mode_comfort.on_click_mode_comfort()
+        mode_comfort.set_mode_comfort()
         new_service_selected = mode_comfort.get_service_mode()
         assert new_service_selected.text == 'Comfort'# Check the selected comfort mode
 
     def test_fill_phone_number(self):
         phone_page = UrbanRoutesPage(self.driver)
-        phone_page.on_click_phone_number()
-        phone_page.set_phone_number(Data.PHONE_NUMBER)
-        phone_page.on_click_next_button()
-        code = retrieve_phone_code()
-        print(code)
+        phone_page.fill_phone_number(Data.PHONE_NUMBER)
+        code = retrieve_phone_code(self.driver)
         phone_page.set_confirmation_code(code)
-        phone_page.on_click_confirmation_button()
+        assert phone_page.get_code_value() == code  # check code phone value
+        phone_page.fill_confirmation_code()
 
 
     @classmethod

@@ -15,7 +15,7 @@ class UrbanRoutesPage:
 
     phone_field = (By.CLASS_NAME, "np-text")
     phone_input = (By.ID, 'phone')
-    next_button = (By.XPATH, '//button[@class="button full" and text()="Next"]')
+    next_button = (By.XPATH, '//button[@class="button full" and text()="Siguiente"]')
     code_input = (By.ID, 'code')
     confirm_button = (By.XPATH, '//button[@class="button full" and text()="Confirmar"]')
 
@@ -71,25 +71,40 @@ class UrbanRoutesPage:
         return (WebDriverWait(self.driver,5)
                 .until(expected_conditions.visibility_of_element_located(self.service_active)))
 
-    def on_click_mode_comfort(self):
+    def __on_click_mode_comfort(self):
         self.driver.find_element(*self.service_comfort).click()
+
+    def set_mode_comfort(self):
+        self.__on_click_mode_comfort()
 
     """
         Phone number section
     """
-    def on_click_phone_number(self):
+    def __on_click_phone_number(self):
        self.driver.find_element(*self.phone_field).click()
 
-    def set_phone_number(self, phone_number):
+    def __on_click_next_button(self):
+        self.driver.find_element(*self.next_button).click()
+
+    def __set_phone_number(self, phone_number):
         (WebDriverWait(self.driver,5)
          .until(expected_conditions.visibility_of_element_located(self.phone_input))).send_keys(phone_number)
-
-    def on_click_next_button(self):
-        self.driver.find_element(*self.next_button).click()
 
     def set_confirmation_code(self,code):
         (WebDriverWait(self.driver,5)
          .until(expected_conditions.visibility_of_element_located(self.code_input))).send_keys(code)
 
-    def on_click_confirmation_button(self):
+    def get_code_value(self):
+        return self.driver.find_element(*self.code_input).get_property('value')
+
+    def __on_click_confirmation_button(self):
         self.driver.find_element(*self.confirm_button).click()
+
+    def fill_phone_number(self,phone_number):
+        self.__on_click_phone_number()
+        self.__set_phone_number(phone_number)
+        self.__on_click_next_button()
+
+    def fill_confirmation_code(self):
+        self.__on_click_confirmation_button()
+
