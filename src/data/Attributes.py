@@ -20,3 +20,5 @@ ADD_CARD_BUTTON = (By.XPATH, '//button[@class="button full" and text()="Agregar"
 CLOSE_BUTTON = (By.XPATH, '//div[@class="section active"]/button[@class="close-button section-close"]')
 MESSAGE_FIELD = (By.ID, 'comment')
 BLANK_AND_HANDKERCHIEFS = (By.XPATH, '//span[@class="slider round"]')
+ICE_CREAMS_PLUS = (By.XPATH, '//div[@class="counter-plus"]')
+ICE_CREAMS_CNT = (By.XPATH, '//div[@class="counter-value"]')

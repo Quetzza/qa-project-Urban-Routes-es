@@ -141,13 +141,26 @@ class TestUrbanRoutes:
         assert value_message == message
 
     # Ask for a blanket and handkerchiefs
-    def test_for_blacket_and_handkerchiefs(self):
+    def test_for_blanket_and_handkerchiefs(self):
 
         slider_elements = self.urban_routes.get_elements(Attributes.BLANK_AND_HANDKERCHIEFS)
 
         slider_elements[0].click()
 
         assert slider_elements[0].is_selected() != True
+
+    # Order 2 ice creams
+    def test_order_2_ice_creams(self):
+
+        plus_elements = self.urban_routes.get_elements(Attributes.ICE_CREAMS_PLUS)
+
+        for cnt in range(2):
+            plus_elements[0].click()
+
+        cnt_elements = self.urban_routes.get_elements(Attributes.ICE_CREAMS_CNT)
+        cnt  = cnt_elements[0].text
+
+        assert cnt == '2'
 
     @classmethod
     def teardown_class(cls):
