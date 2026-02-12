@@ -2,5 +2,5 @@ ADDRESS_FROM = 'East 2nd Street, 601'
 ADDRESS_TO = '1300 1st St'
 PHONE_NUMBER= '+1 123 123 12 12'
 CARD_NUMBER, CARD_CODE= '1234 5678 9100', '111'
-MESSAGE_FOR_DRIVER = 'Muéstrame el camino al museo'
+MESSAGE_FOR_DRIVER = 'Muéstrame el museo'
 
