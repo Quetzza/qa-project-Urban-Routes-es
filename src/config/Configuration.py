@@ -1,4 +1,4 @@
-URBAN_ROUTER_URL = 'https://cnt-31c5f7ef-41fb-49e4-aece-f3ecb4043c59.containerhub.tripleten-services.com?lng=es'
+URBAN_ROUTER_URL = 'https://cnt-dbae39e6-b677-469b-a443-7160add62aaa.containerhub.tripleten-services.com?lng=es'
 
 
 

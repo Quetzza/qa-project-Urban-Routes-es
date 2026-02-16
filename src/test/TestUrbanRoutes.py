@@ -1,3 +1,5 @@
+import time
+
 from src.data import  Data
 from src.config import Configuration
 from src.model.UrbanRoutesPage import UrbanRoutesPage
@@ -30,8 +32,7 @@ class TestUrbanRoutes:
         address_from = Data.ADDRESS_FROM
         address_to = Data.ADDRESS_TO
 
-        self.urban_routes.set_route(address_from=address_from, address_to=address_to)
-
+        self.urban_routes.set_route(address_from, address_to)
 
     # Select the Comfort rate
     def test_select_modo_comfort(self):
@@ -43,12 +44,11 @@ class TestUrbanRoutes:
 
         phone_number = Data.PHONE_NUMBER
 
-        self.urban_routes.add_phone_number(phone_number=phone_number)
+        self.urban_routes.add_phone_number(phone_number)
 
         code = retrieve_phone_code(self.driver)
 
-        self.urban_routes.add_phone_code(code=code)
-
+        self.urban_routes.add_phone_code(code)
 
     # Add a credit card
     def test_add_payment_method(self):
@@ -56,13 +56,14 @@ class TestUrbanRoutes:
         card_number = Data.CARD_NUMBER
         card_code   = Data.CARD_CODE
 
-        self.urban_routes.add_credit_card(card_number=card_number, card_code=card_code)
-       
+        self.urban_routes.add_credit_card(card_number, card_code)
+
     # Write a message for the controller
     def test_message_for_driver(self):
-    
+
         message = Data.MESSAGE_FOR_DRIVER
-        self.urban_routes.add_message_for_driver(message=message)
+
+        self.urban_routes.add_message_for_driver(message)
 
     # Ask for a blanket and handkerchiefs
     def test_for_blanket_and_handkerchiefs(self):
@@ -73,6 +74,10 @@ class TestUrbanRoutes:
     def test_order_2_ice_creams(self):
 
        self.urban_routes.add_two_ice_creams()
+
+    def test_call_taxi(self):
+
+        self.urban_routes.call_taxi()
 
     @classmethod
     def teardown_class(cls):

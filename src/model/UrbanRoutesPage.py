@@ -1,17 +1,16 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import  expected_conditions as EC
+from selenium.webdriver.support import  expected_conditions
 import time
 
 class UrbanRoutesPage:
 
-    FROM_FIELD = (By.ID, 'from')
-    TO_FIELD = (By.ID, 'to')
+    ADDRESS_FIELD = (By.XPATH,  '//div[@class="input-container"]/input[@class="input"]')
 
     ROUTE_MODE = (By.XPATH, '//div[@class="mode active" and text()="Flash"]')
     TRANSPORT_MODE = (By.XPATH, '//img[contains(@src, "taxi-active")]')
-    CALL_TAXI_BUTTON = (By.XPATH, '//button[@class="button round"]')
+    CALL_SERVICE_BUTTON = (By.XPATH, '//button[@class="button round"]')
 
     SERVICE_ACTIVE = (By.XPATH, '//div[@class="tcard active"]/div[@class="tcard-title"]')
     SERVICE_COMFORT = (By.XPATH, '//div[@class="tcard-title" and text()="Comfort"]')
@@ -24,205 +23,145 @@ class UrbanRoutesPage:
 
     PAYMENT_METHOD_BUTTON = (By.CLASS_NAME, 'pp-text')
     PLUS_BUTTON = (By.CLASS_NAME, 'pp-plus')
-    CARD_NUMBER_INPUT = (By.NAME, 'number')
-    CARD_CODE_INPUT = (By.NAME, 'code')
+    CARD_FIELDS = (By.XPATH, '//div[@class="card-wrapper"]//input[@class="card-input"]')
     ADD_CARD_BUTTON = (By.XPATH, '//button[@class="button full" and text()="Agregar"]')
     CLOSE_BUTTON = (By.XPATH, '//div[@class="section active"]/button[@class="close-button section-close"]')
     
     MESSAGE_FIELD = (By.ID, 'comment')
-    
-    BLANK_AND_HANDKERCHIEFS_INPUT = (By.XPATH, '//input[@class="switch-input"]')
+
+
+    CHECKED_INPUT = (By.XPATH, '//input[@class="switch-input"]')
     BLANK_AND_HANDKERCHIEFS_SLIDER = (By.XPATH, '//span[@class="slider round"]')
     
     ICE_CREAMS_PLUS = (By.XPATH, '//div[@class="counter-plus"]')
     ICE_CREAMS_CNT = (By.XPATH, '//div[@class="counter-value"]')
 
+    SMART_BUTTON = (By.XPATH, '//span[@class="smart-button-main"]')
+    ORDER_TIME = (By.CLASS_NAME, 'order-header-time')
+    MODAL_BUTTONS = (By.XPATH, '//div[@class="order-btn-group"]')
+
     def __init__(self, driver):
-
         self.driver = driver
-        self.wait = WebDriverWait(self.driver,5)
 
-    def __get_visibility_element(self, element):
-        return self.wait.until(EC.visibility_of_element_located(element))
+    # Espere hasta que el elemento sea visible
+    def __get_element_visibility(self, element, timeout):
+        return (WebDriverWait(self.driver, timeout)
+                .until(expected_conditions.visibility_of_element_located(element)))
 
-    def __get_visibility_elements(self, element):
-        return self.wait.until(EC.visibility_of_all_elements_located(element))
+    # Todos los elementos visibles
+    def __get_elements_visibility(self, element,timeout):
+        return (WebDriverWait(self.driver, timeout)
+                .until(expected_conditions.visibility_of_all_elements_located(element)))
 
-    def __get_fiend_elements(self, element):
-        return self.driver.find_elements(*element)
-    
-    def __get_presence_elements(self, element):
-        return self.wait.until(EC.presence_of_all_elements_located(element))
-    
-    def __get_clickable_element(self, element):
-        return self.wait.until(EC.element_to_be_clickable(element))
+    # Al menos un elemento presente
+    def __get_elements_presence(self, element, timeout):
+        return (WebDriverWait(self.driver, timeout)
+                .until(expected_conditions.presence_of_all_elements_located(element)))
 
-        
+    # Elemento clickable (visible + habilitado)
+    def __get_element_clickable(self, element, timeout):
+        return (WebDriverWait(self.driver, timeout)
+                .until(expected_conditions.element_to_be_clickable(element)))
+
+
 
     def set_route(self, address_from, address_to):
 
-        from_element = self.__get_visibility_element(self.FROM_FIELD)
-        from_element.send_keys(address_from)
-       
-        to_element = self.__get_visibility_element(self.TO_FIELD)
-        to_element.send_keys(address_to)
+        elements = self.__get_elements_visibility(self.ADDRESS_FIELD,5)
 
-        value_from_element = from_element.get_property('value')
-        value_to_element   = to_element.get_property('value')
+        elements[0].send_keys(address_from)# from input
+        elements[1].send_keys(address_to)# to input
 
-        assert value_from_element == address_from
-        assert value_to_element == address_to
-
-    def __call_service_taxi(self):
-
-        mode_route_element = self.__get_visibility_element(self.ROUTE_MODE)
-        mode_route = mode_route_element.text
-
-        transport_element = self.__get_visibility_element(self.TRANSPORT_MODE)
-        transport = transport_element.get_attribute('src')
-
-        assert mode_route == 'Flash'
-        assert 'taxi-active' in transport
-
-        call_service_taxi_button = self.__get_clickable_element(self.CALL_TAXI_BUTTON)
-        call_service_taxi_button.click()
+        assert elements[0].get_property('value') == address_from
+        assert elements[1].get_property('value') == address_to
 
     def select_mode_comfort(self):
 
-        self.__call_service_taxi()
+        self.__get_element_clickable(self.CALL_SERVICE_BUTTON,5).click()
+        self.__get_element_clickable(self.SERVICE_COMFORT,5).click()
 
-        service_element = self.__get_visibility_element(self.SERVICE_ACTIVE)
-        current_service = service_element.text
+        current_service = self.__get_element_visibility(self.SERVICE_ACTIVE,5).text
 
-        assert current_service == 'Laboral'
-
-        service_comfort = self.__get_clickable_element(self.SERVICE_COMFORT)
-        service_comfort.click()
-
-        new_selected_service= self.__get_visibility_element(self.SERVICE_ACTIVE)
-        new_current_service = new_selected_service.text
-
-        assert new_current_service == 'Comfort'
-    
-    def __clickable_phone_number(self):
-
-        phone_number_element = self.__get_clickable_element(self.PHONE_BUTTON)
-        phone_number_element.click()
-    
-    def __clickable_next_button(self):
-        
-        next_element = self.__get_clickable_element(self.NEXT_BUTTON)
-        next_element.click()
-
-    def __clickable_confirm_button(self):
-
-        confirm_element = self.__get_clickable_element(self.CONFIRM_BUTTON)
-        confirm_element.click()
-
-    def __set_phone_number(self, phone_number):
-
-        phone_number_element = self.__get_visibility_element(self.PHONE_FIELD)
-        phone_number_element.send_keys(phone_number)
-
-        value_phone_number = phone_number_element.get_property('value')
-
-        assert value_phone_number == phone_number
-    
-    def __set_phone_code(self, code):
-        
-        code_element = self.__get_visibility_element(self.CODE_FIELD)
-        code_element.send_keys(code)
-
-        value_code = code_element.get_property('value')
-
-        assert value_code == code
+        assert current_service == 'Comfort'
 
     def add_phone_number(self, phone_number):
-        self.__clickable_phone_number()
-        self.__set_phone_number(phone_number)
-        self.__clickable_next_button()
+
+        self.__get_element_clickable(self.PHONE_BUTTON,5).click()
+
+        element = self.__get_element_visibility(self.PHONE_FIELD,5)
+        element.send_keys(phone_number)
+
+        assert element.get_property('value') == phone_number
+
+        self.__get_element_clickable(self.NEXT_BUTTON,5).click()
 
     def add_phone_code(self, code):
-        self.__set_phone_code(code)
-        self.__clickable_confirm_button()    
-    
-    def __clickable_payment_method(self):
-        payment_method_element = self.__get_visibility_element(self.PAYMENT_METHOD_BUTTON)
-        payment_method_element.click()
-    
-    def __clickable_plus_button(self):
-        plus_button_element = self.__get_clickable_element(self.PLUS_BUTTON)
-        plus_button_element.click()
-    
-    def __clickable_add_card(self):
-        add_element = self.__get_clickable_element(self.ADD_CARD_BUTTON)
-        add_element.click()
-    
-    def __clickable_close_payment_method(self):
-        close_element = self.__get_presence_elements(self.CLOSE_BUTTON)
-        close_element[1].click()
 
-    def __set_card_number(self, card_number):
+        element = self.__get_element_visibility(self.CODE_FIELD,5)
+        element.send_keys(code)
 
-        card_number_element = self.__get_visibility_element(self.CARD_NUMBER_INPUT)
-        card_number_element.send_keys(card_number)
-        
-        value_card_number = card_number_element.get_property('value')
+        assert  element.get_property('value') == code
 
-        assert value_card_number == card_number
-    
-    def __set_card_code(self, card_code):
-
-        card_code_element = self.__get_visibility_element(self.CARD_CODE_INPUT)
-        card_code_element.send_keys(card_code)
-        
-        value_card_number = card_code_element.get_property('value')
-
-        assert value_card_number == card_code
-
-        card_code_element.send_keys(Keys.TAB)
+        self.__get_element_clickable(self.CONFIRM_BUTTON,5).click()
 
     def add_credit_card(self, card_number, card_code):
 
-        self.__clickable_payment_method()
-        self.__clickable_plus_button()
-        self.__set_card_number(card_number)
-        self.__set_card_code(card_code)
-        self.__clickable_add_card()
-        self.__clickable_close_payment_method()
-    
-    def __set_message(self, message):
+        self.__get_element_clickable(self.PAYMENT_METHOD_BUTTON,5).click()
+        self.__get_element_clickable(self.PLUS_BUTTON,5).click()
 
-        message_element = self.__get_visibility_element(self.MESSAGE_FIELD)
-        message_element.send_keys(message)
+        elements = self.__get_elements_visibility(self.CARD_FIELDS,5)
 
-        value_message = message_element.get_property('value')
+        elements[0].send_keys(card_number) # card number
+        elements[1].send_keys(card_code) # card code
 
-        assert value_message == message
+        assert elements[0].get_property('value') == card_number
+        assert elements[1].get_property('value') == card_code
+
+        elements[1].send_keys(Keys.TAB)# Change focus
+
+        self.__get_element_clickable(self.ADD_CARD_BUTTON,5).click()
+        self.__get_elements_presence(self.CLOSE_BUTTON,5)[1].click()
     
     def add_message_for_driver(self, message):
-        
-        self.__set_message(message)
-    
+
+        message_element = self.__get_element_visibility(self.MESSAGE_FIELD,5)
+        message_element.send_keys(message)
+
+        assert  message_element.get_property('value') == message
+
     def add_blanket_and_handkerchiefs(self):
 
-        input_element = self.__get_fiend_elements(self.BLANK_AND_HANDKERCHIEFS_INPUT)
+        checked_elements = self.__get_elements_presence(self.CHECKED_INPUT,5)
 
-        slider_element = self.__get_presence_elements(self.BLANK_AND_HANDKERCHIEFS_SLIDER)
-        slider_element[0].click()
+        self.__get_elements_presence(self.BLANK_AND_HANDKERCHIEFS_SLIDER,5)[0].click()
 
-        current_checked = input_element[0].get_property('checked')
-
-        assert  current_checked == True
+        assert checked_elements[0].get_property('checked') == True
 
     def add_two_ice_creams(self):
-        
-        plus_element = self.__get_presence_elements(self.ICE_CREAMS_PLUS)
 
         for cnt in range(2):
-            plus_element[0].click()
-        
-        cnt_element = self.__get_presence_elements(self.ICE_CREAMS_CNT)
-        cnt_ice_creams = cnt_element[0].text
+            self.__get_elements_visibility(self.ICE_CREAMS_PLUS, 5)[0].click()
 
-        assert cnt_ice_creams == '2' 
+        cnt_element = self.__get_elements_visibility(self.ICE_CREAMS_CNT,5)[0].text
+
+        assert cnt_element == '2'
+
+    def call_taxi(self):
+
+        self.__get_element_clickable(self.SMART_BUTTON,5).click()
+
+        elements = self.__get_elements_visibility(self.MODAL_BUTTONS,5)
+
+        assert len(elements) == 2
+
+        time.sleep(1)
+
+        timer = self.__get_element_visibility(self.ORDER_TIME,5).text
+
+        m, s = map(int, timer.split(':'))
+
+        time.sleep(s)
+
+        elements = self.__get_elements_presence(self.MODAL_BUTTONS, 5)
+
+        assert len(elements) == 3
