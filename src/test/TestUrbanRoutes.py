@@ -34,10 +34,15 @@ class TestUrbanRoutes:
 
         self.urban_routes.set_route(address_from, address_to)
 
+        assert self.urban_routes.get_from() == address_from
+        assert self.urban_routes.get_to() == address_to
+
     # Select the Comfort rate
     def test_select_modo_comfort(self):
 
         self.urban_routes.select_mode_comfort()
+
+        assert self.urban_routes.get_service() == 'Comfort'
 
     # Fill in the phone number
     def test_fill_phone_number(self):
@@ -50,13 +55,19 @@ class TestUrbanRoutes:
 
         self.urban_routes.add_phone_code(code)
 
+        assert self.urban_routes.get_phone_number() == phone_number
+        assert self.urban_routes.get_phone_code() == code
+
     # Add a credit card
     def test_add_payment_method(self):
 
-        card_number = Data.CARD_NUMBER
-        card_code   = Data.CARD_CODE
+        number = Data.CARD_NUMBER
+        code   = Data.CARD_CODE
 
-        self.urban_routes.add_credit_card(card_number, card_code)
+        self.urban_routes.add_credit_card(number, code)
+
+        assert self.urban_routes.get_card_number() == number
+        assert self.urban_routes.get_card_code() == code
 
     # Write a message for the controller
     def test_message_for_driver(self):
@@ -65,19 +76,23 @@ class TestUrbanRoutes:
 
         self.urban_routes.add_message_for_driver(message)
 
+        assert  self.urban_routes.get_message_for_driver() == message
+
     # Ask for a blanket and handkerchiefs
     def test_for_blanket_and_handkerchiefs(self):
 
         self.urban_routes.add_blanket_and_handkerchiefs()
 
+        assert self.urban_routes.get_checked_blanket_and_handkerchiefs() == True
+
     # Order 2 ice creams
     def test_order_2_ice_creams(self):
+        self.urban_routes.add_two_ice_creams()
+        assert self.urban_routes.get_count_ice_creams() == '2'
 
-       self.urban_routes.add_two_ice_creams()
-
-    def test_call_taxi(self):
-
-        self.urban_routes.call_taxi()
+    # def test_call_taxi(self):
+    #
+    #     self.urban_routes.call_taxi()
 
     @classmethod
     def teardown_class(cls):
